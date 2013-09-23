@@ -1,5 +1,8 @@
 module Cms
 class ApplicationController < ::ApplicationController
+  #skipping devise authentication for cms pages
+  skip_before_filter :authenticate_user!
+
   include Cms::Authentication::Controller
   include Cms::ErrorHandling
   include Cms::DomainSupport
