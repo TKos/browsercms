@@ -24,5 +24,10 @@ test/dummy/.sass-cache
 test/dummy/.rvmrc
 test/dummy/.powder
 test/dummy/config/database.yml
+test/dummy/.powder
+test/dummy/.rvmrc
+test/dummy/public/assets/*
 .sass-cache
+.rvmrc
+.ruby-version
 db/backups

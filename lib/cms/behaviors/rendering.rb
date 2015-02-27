@@ -37,7 +37,6 @@ module Cms
           @instance_variable_name_for_view = options[:instance_variable_name_for_view]
 
           extend ClassMethods
-          extend EngineHelper
           include InstanceMethods
 
           # I'm not pleased with the need to include all of the these rails helpers onto every 'renderable' content item
@@ -82,11 +81,7 @@ module Cms
       # of the renderable, so if you have an Article that is renderable, 
       # the template will be "articles/render"
       def template_path
-        path = "#{name.underscore.pluralize}/render"
-        if main_app_model?
-          path = "cms/#{path}"
-        end
-        path
+        "#{name.underscore.pluralize}/render"
       end
 
       # Instance variables that will not be copied from the renderable to the view
@@ -96,6 +91,19 @@ module Cms
 
     end
     module InstanceMethods
+
+      # Returns the Mercury editor type for a given attribute
+      # @param [Symbol] method (i.e. :name, :content, etc)
+      # @return [Hash]
+      def editor_info(method)
+        column = self.class.columns_hash[method.to_s]
+        if column.type == :text
+          {:element => 'div', :region => 'full'}
+        else
+          {:element => 'span', :region => 'simple'}
+        end
+      end
+
       def prepare_to_render(controller)
         # Give this renderable a reference to the controller
         @controller = controller
@@ -123,7 +131,7 @@ module Cms
 
         if self.respond_to?(:deleted) && self.deleted
           logger.error "Attempting to render deleted object: #{self.inspect}"
-          msg = (@mode == 'edit' ? %Q[<div class="error">This #{self.class.name} has been deleted.  Please remove this container from the page</div>] : '')
+          msg = (edit_mode? ? %Q[<div class="error">This #{self.class.name} has been deleted.  Please remove this container from the page</div>] : '')
           return msg
         end
 
