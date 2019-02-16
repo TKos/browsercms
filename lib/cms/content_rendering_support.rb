@@ -55,6 +55,7 @@ module Cms
 
         # copy new instance variables to the template
         %w[page mode show_page_toolbar].each do |v|
+          @template = Object.new if @template.nil?
           @template.instance_variable_set("@#{v}", instance_variable_get("@#{v}"))
         end
 
@@ -79,7 +80,7 @@ module Cms
     def prepare_connectables_for_render
       @_connectors = @page.connectors.for_page_version(@page.version)
       @_connectables = @_connectors.map(&:connectable_with_deleted)
-    
+
       unless (logged_in? && current_user.able_to?(:administrate, :edit_content, :publish_content))
         worst_exception = nil
         @_connectables.each do |c|
